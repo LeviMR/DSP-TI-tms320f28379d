@@ -13,6 +13,22 @@ volatile float vSaidaMedida = 0.0f;     // Nova variável para o sensor de tensão
 volatile float iEntradaMedida = 0.0f;   // Variável para a corrente de entrada
 volatile float iSaidaMedida = 0.0f;     // Variável para a corrente de saída
 
+void setupButton(void) {
+//    EALLOW;
+//    // Configura GPIO13 (Pino 78 da Launchpad) como entrada
+//    GpioCtrlRegs.GPAMUX1.bit.GPIO13 = 0;  // Função GPIO
+//    GpioCtrlRegs.GPADIR.bit.GPIO13 = 0;  // Entrada
+//    GpioCtrlRegs.GPAPUD.bit.GPIO13 = 0;  // Habilita Pull-up interno (Botão deve ligar ao GND)
+//    EDIS;
+
+    EALLOW;
+   // Configura GPIO8 (Pino 78 da Launchpad) como entrada
+   GpioCtrlRegs.GPAMUX1.bit.GPIO8 = 0;  // Função GPIO
+   GpioCtrlRegs.GPADIR.bit.GPIO8 = 0;  // Entrada
+   GpioCtrlRegs.GPAPUD.bit.GPIO8 = 0;  // Habilita Pull-up interno (Botão deve ligar ao GND)
+   EDIS;
+}
+
 void setupLED(void) {
     EALLOW;
     // LED Vermelho da LaunchPad F28379D (GPIO34)
@@ -135,6 +151,12 @@ void setupPWM(void) {
     EPwm6Regs.TBCTL.bit.CLKDIV = TB_DIV1;
     EPwm6Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;
     EPwm6Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO_PRD;
+
+    EALLOW;
+    EPwm6Regs.DBCTL.bit.OUT_MODE = 0; // NOVO: Desabilita Dead-Band (Libera o 6B)
+    EPwm6Regs.DBCTL.bit.IN_MODE = 0;  // NOVO: Canais A e B independentes
+    EDIS;
+
     EPwm6Regs.AQCTLA.bit.PRD = AQ_NO_ACTION;
     EPwm6Regs.AQCTLA.bit.ZRO = AQ_NO_ACTION;
     EPwm6Regs.AQCTLA.bit.CAU = AQ_CLEAR;
@@ -167,11 +189,21 @@ void setupPWM(void) {
     EPwm8Regs.TBCTL.bit.CLKDIV = TB_DIV1;
     EPwm8Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;
     EPwm8Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO_PRD;
+
+    EALLOW;
+    EPwm8Regs.DBCTL.bit.OUT_MODE = 0; // Garante Dead-Band desativado no 8
+    EDIS;
+
     EPwm8Regs.AQCTLA.bit.PRD = AQ_NO_ACTION;
     EPwm8Regs.AQCTLA.bit.ZRO = AQ_NO_ACTION;
     EPwm8Regs.AQCTLA.bit.CAU = AQ_CLEAR;
     EPwm8Regs.AQCTLA.bit.CAD = AQ_SET;
    //---------------------------------------
+
+    EALLOW;
+    EPwm6Regs.AQCSFRC.bit.CSFB = 0x1; // Força EPWM6B (Pino 75) para Low
+    EPwm8Regs.AQCSFRC.bit.CSFA = 0x1; // Força EPWM8A (Pino 74) para Low
+    EDIS;
 
     EALLOW;
     CpuSysRegs.PCLKCR0.bit.TBCLKSYNC = 1;

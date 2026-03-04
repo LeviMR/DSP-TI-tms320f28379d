@@ -35,6 +35,7 @@ extern volatile float iSaidaMedida;
 void setupADC(void);
 void setupPWM(void);
 void setupLED(void);
+void setupButton(void);
 
 // Protótipo da ISR (Rotina de Interrupção)
 __interrupt void adca1_isr(void);
