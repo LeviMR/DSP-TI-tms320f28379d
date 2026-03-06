@@ -11,7 +11,8 @@
 
 // --- Cálculos de Tempo (100MHz SYSCLK) ---
 // Freq = SYSCLK / (2 * TBPRD) -> 100MHz / (2 * 2000) = 25kHz
-#define PWM_PERIOD     2000
+#define PWM_PERIOD   2000
+extern volatile uint16_t pwmDutyCicle;
 
 // Fator de conversão (Sensor 1: 33k/100R)
 #define K_CONV_BRUTA 0.0973388f

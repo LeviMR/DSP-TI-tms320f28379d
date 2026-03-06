@@ -12,6 +12,7 @@ volatile float vRedeInstantanea = 0.0f; // Variável para a tensão de entrada
 volatile float vSaidaMedida = 0.0f;     // Nova variável para o sensor de tensão de saída
 volatile float iEntradaMedida = 0.0f;   // Variável para a corrente de entrada
 volatile float iSaidaMedida = 0.0f;     // Variável para a corrente de saída
+volatile uint16_t pwmDutyCicle = 0;
 
 void setupButton(void) {
 //    EALLOW;
@@ -119,7 +120,7 @@ void setupPWM(void) {
 
     // pino 40A 39B
     EPwm1Regs.TBPRD = PWM_PERIOD;           // 25 kHz
-    EPwm1Regs.CMPA.bit.CMPA = PWM_PERIOD/4;                  // D = 0,25
+    EPwm1Regs.CMPA.bit.CMPA = pwmDutyCicle/4; //PWM_PERIOD/4;                  // D = 0,25
     EPwm1Regs.TBCTR = 0x0000;                       // Clear counter
 
     EPwm1Regs.TBPHS.bit.TBPHS = 0;                  // Phase is 0
@@ -139,7 +140,7 @@ void setupPWM(void) {
 
     // pino 75
     EPwm6Regs.TBPRD = EPwm1Regs.TBPRD;
-    EPwm6Regs.CMPA.bit.CMPA = PWM_PERIOD/4;
+    EPwm6Regs.CMPA.bit.CMPA = pwmDutyCicle/4; //PWM_PERIOD/4;
     EPwm6Regs.TBCTR = 0x0000;
 
     EPwm6Regs.TBPHS.bit.TBPHS = 0; // Phase is 60o (180/3)
@@ -177,7 +178,7 @@ void setupPWM(void) {
     //---------------------------------------
     // pino 74
     EPwm8Regs.TBPRD = EPwm1Regs.TBPRD;
-    EPwm8Regs.CMPA.bit.CMPA = PWM_PERIOD/4;
+    EPwm8Regs.CMPA.bit.CMPA = pwmDutyCicle/4; //PWM_PERIOD/4;
     EPwm8Regs.TBCTR = 0x0000;
 
     EPwm8Regs.TBPHS.bit.TBPHS = EPwm1Regs.TBPRD; // Phase is 180o

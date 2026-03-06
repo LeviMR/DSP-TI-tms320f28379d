@@ -50,7 +50,7 @@ void main(void) {
 
     // Enquanto o botão NÃO for pressionado (considerando Pull-up interno, pino em '1')
     // O código fica "preso" neste while e o PWM continua em 0V (travado no setupPWM)
-    uint16_t confirmacao = 0;
+    // uint16_t confirmacao = 0;
     DELAY_US(1000);
     while(GpioDataRegs.GPADAT.bit.GPIO8 == 1) {
         // Pisca o LED rápido para indicar que o sistema está aguardando o "START"
@@ -85,6 +85,20 @@ void main(void) {
     while(1) {
         // A lógica de controle do seu Cuk pode ser colocada aqui
         // ou dentro da própria ISR para maior velocidade.
+
+        // --- 1. TRAVA DE SEGURANÇA (LIMITADOR) ---
+        // Impede que o Duty Cycle ultrapasse 80% do PWM_PERIOD (1600 se o período for 2000)
+        if(pwmDutyCicle > 1600) {
+            pwmDutyCicle = 1600;
+        }
+
+        // ATUALIZAÇÃO EM TEMPO REAL
+        // Copia o valor da RAM (que você muda no debugger) para o Hardware
+        EALLOW;
+        EPwm1Regs.CMPA.bit.CMPA = pwmDutyCicle/4;
+        EPwm6Regs.CMPA.bit.CMPA = pwmDutyCicle/4;
+        EPwm8Regs.CMPA.bit.CMPA = pwmDutyCicle/4;
+        EDIS;
 
         // 1. BLINK LED (Heartbeat)
         // Inverte o estado do pino GPIO34
